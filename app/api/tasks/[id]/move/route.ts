@@ -42,6 +42,15 @@ export async function PATCH(
     const body = await request.json();
     const { targetColumnId, targetPosition } = body;
 
+    // Validate required fields exist
+    if (!targetColumnId) {
+      return NextResponse.json({ error: "targetColumnId is required" }, { status: 400 });
+    }
+
+    if (targetPosition === undefined || targetPosition === null) {
+      return NextResponse.json({ error: "targetPosition is required" }, { status: 400 });
+    }
+
     if (!mongoose.Types.ObjectId.isValid(targetColumnId)) {
       return NextResponse.json({ error: "Invalid target column ID" }, { status: 400 });
     }

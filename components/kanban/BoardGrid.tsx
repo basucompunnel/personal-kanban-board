@@ -2,6 +2,7 @@
 
 import { Column } from "./Column";
 import { ColumnData, TaskData } from "./useBoard";
+import { Card } from "@/components/ui/card";
 import {
   DndContext,
   DragEndEvent,
@@ -47,7 +48,7 @@ export function BoardGrid({
     [tasks]
   );
 
-  const handleDragEnd = async (event: DragEndEvent) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     setActiveId(null);
     const { active, over } = event;
 
@@ -57,17 +58,23 @@ export function BoardGrid({
     const draggedTask = tasks.find((t) => t.id === active.id);
     if (!draggedTask) return;
 
-    const targetColumnId = over.id as string;
-    const columnTasks = getTasksByColumn(targetColumnId);
+    let targetColumnId: string;
+    let targetPosition: number;
 
-    // Calculate target position
-    let targetPosition = columnTasks.length;
     if (over.data?.current?.type === "Task") {
+      // Dropping over a task - get the column from the task
       const overTask = tasks.find((t) => t.id === over.id);
-      if (overTask) {
-        const overIndex = columnTasks.findIndex((t) => t.id === over.id);
-        targetPosition = overIndex >= 0 ? overIndex : columnTasks.length;
-      }
+      if (!overTask) return;
+
+      targetColumnId = overTask.columnId;
+      const columnTasks = getTasksByColumn(targetColumnId);
+      const overIndex = columnTasks.findIndex((t) => t.id === over.id);
+      targetPosition = overIndex >= 0 ? overIndex : columnTasks.length;
+    } else {
+      // Dropping over a column
+      targetColumnId = over.id as string;
+      const columnTasks = getTasksByColumn(targetColumnId);
+      targetPosition = columnTasks.length;
     }
 
     // Only move if the target is different or position is different
@@ -75,7 +82,8 @@ export function BoardGrid({
       draggedTask.columnId !== targetColumnId ||
       draggedTask.position !== targetPosition
     ) {
-      await onMoveTask(draggedTask.id, targetColumnId, targetPosition);
+      // Non-blocking: fire API call in background without awaiting
+      onMoveTask(draggedTask.id, targetColumnId, targetPosition);
     }
   };
 
@@ -87,7 +95,7 @@ export function BoardGrid({
       onDragEnd={handleDragEnd}
       onDragStart={(event: DragStartEvent) => setActiveId(event.active.id as string)}
     >
-      <div className="flex gap-1 overflow-x-auto pb-4">
+      <div className="flex gap-2 h-full overflow-auto">
         {columns.map((column) => (
           <Column
             key={column.id}
@@ -103,9 +111,9 @@ export function BoardGrid({
 
       <DragOverlay>
         {activeDraggedTask && (
-          <div className="bg-white border rounded-lg p-3 shadow-xl opacity-80">
-            <p className="font-medium text-sm max-w-xs">{activeDraggedTask.title}</p>
-          </div>
+          <Card className="p-3 shadow-xl opacity-90 max-w-xs rounded-sm">
+            <p className="font-medium text-sm">{activeDraggedTask.title}</p>
+          </Card>
         )}
       </DragOverlay>
     </DndContext>

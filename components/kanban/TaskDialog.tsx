@@ -163,12 +163,17 @@ export function TaskDialog({
             <Button
               type="button"
               variant="outline"
+              className="rounded-xs"
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={!title.trim() || isLoading}>
+            <Button
+              className="rounded-xs"
+              type="submit"
+              disabled={!title.trim() || isLoading}
+            >
               {getSubmitButtonText()}
             </Button>
           </DialogFooter>

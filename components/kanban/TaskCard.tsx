@@ -53,7 +53,7 @@ export function TaskCard({
       style={style}
       {...attributes}
       {...listeners}
-      className={`p-3 cursor-grab active:cursor-grabbing transition-opacity ${
+      className={`rounded-xs p-3 cursor-grab active:cursor-grabbing transition-opacity ${
         isSortableDragging ? "opacity-50" : "opacity-100"
       } hover:shadow-md`}
     >

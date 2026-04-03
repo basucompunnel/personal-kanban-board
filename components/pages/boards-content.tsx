@@ -7,7 +7,7 @@ import { useBoard, BoardData, TaskData } from "@/components/kanban/useBoard";
 import { BoardGrid } from "@/components/kanban/BoardGrid";
 import { ManageBoardsDialog } from "@/components/kanban/ManageBoardsDialog";
 import { TaskDialog } from "@/components/kanban/TaskDialog";
-import { Settings, Loader2 } from "lucide-react";
+import { Settings, Loader2, Plus } from "lucide-react";
 
 export function BoardsContent() {
   const {
@@ -111,6 +111,15 @@ export function BoardsContent() {
     targetColumnId: string,
     targetPosition: number,
   ) => {
+    // Find the task to check if move is necessary
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    // Skip API call if task is dropped in the same column at the same position
+    if (task.columnId === targetColumnId && task.position === targetPosition) {
+      return;
+    }
+
     await moveTaskMutation(taskId, targetColumnId, targetPosition);
   };
 
@@ -136,15 +145,39 @@ export function BoardsContent() {
             </h1>
             <p className="text-sm text-muted-foreground">{headerSubtitle}</p>
           </div>
-          <Button
-            onClick={() => setShowManageBoardsDialog(true)}
-            variant="outline"
-            // size="sm"
-            className="gap-2 rounded-xs"
-          >
-            <Settings className="w-4 h-4" />
-            Manage Boards
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* <Button
+              onClick={() => selectedBoard && handleAddTask(columns[0]?.id || "")}
+              variant="outline"
+              size="sm"
+              className="gap-2 rounded-xs"
+              disabled={!selectedBoard || columns.length === 0}
+              title="Add task to first column"
+            >
+              <Plus className="w-4 h-4" />
+            </Button> */}
+            <Button
+              onClick={() =>
+                selectedBoard && handleAddTask(columns[0]?.id || "")
+              }
+              variant="outline"
+              // size="sm"
+              className="gap-2 rounded-xs"
+              disabled={!selectedBoard || columns.length === 0}
+            >
+              <Plus className="w-4 h-4" />
+              Create Task
+            </Button>
+            <Button
+              onClick={() => setShowManageBoardsDialog(true)}
+              variant="outline"
+              // size="sm"
+              className="gap-2 rounded-xs"
+            >
+              <Settings className="w-4 h-4" />
+              Manage Boards
+            </Button>
+          </div>
         </div>
       </div>
 

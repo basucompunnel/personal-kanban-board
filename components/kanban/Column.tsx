@@ -2,9 +2,7 @@
 
 import { ColumnData, TaskData } from "./useBoard";
 import { TaskCard } from "./TaskCard";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2 } from "lucide-react";
 import { useDroppable } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -40,17 +38,15 @@ export function Column({
   const taskIds = tasks.map((t) => t.id);
 
   return (
-    <div className="bg-muted rounded-sm p-3 w-80 flex flex-col gap-3 max-h-[calc(100vh-300px)]">
-      <div className="flex items-center justify-between gap-2">
-        <h2 className="font-semibold text-sm">{column.title}</h2>
-        <div className="flex items-center gap-1">
-          <Badge variant="secondary">{tasks.length}</Badge>          
-        </div>
+    <div className="bg-muted rounded-sm p-3 flex-1 flex flex-col gap-3 min-w-0 h-full">
+      <div className="flex items-center gap-2 h-10 min-w-0">
+        <h2 className="font-semibold text-sm truncate">{column.title}</h2>
+        <Badge variant="secondary">{tasks.length}</Badge>
       </div>
 
       <div
         ref={setNodeRef}
-        className="flex-1 overflow-y-auto space-y-2 bg-background rounded p-2 min-h-50"
+        className="flex-1 space-y-2 bg-background rounded p-2 flex flex-col"
       >
         <SortableContext
           items={taskIds}
@@ -65,17 +61,13 @@ export function Column({
             />
           ))}
         </SortableContext>
-      </div>
 
-      <Button
-        onClick={() => onAddTask(column.id)}
-        variant="outline"
-        // size="sm"
-        className="w-full gap-2 rounded-xs"
-      >
-        <Plus className="w-4 h-4" />
-        Add Task
-      </Button>
+        {tasks.length === 0 && (
+          <div className="flex-1 flex items-center justify-center">
+            <p className="text-sm text-muted-foreground">No tasks yet</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

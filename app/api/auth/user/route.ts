@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthToken } from "@/lib/auth";
-import { verifyToken } from "@/lib/auth";
+import { getAuthTokenFromHeader, verifyToken } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get("auth")?.value;
+    const token = getAuthTokenFromHeader(request);
 
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

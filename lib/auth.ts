@@ -45,3 +45,11 @@ export async function getAuthToken(): Promise<string | undefined> {
   const cookieStore = await cookies();
   return cookieStore.get("auth_token")?.value;
 }
+
+export function getAuthTokenFromHeader(request: any): string | undefined {
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return undefined;
+  }
+  return authHeader.slice(7); // Remove "Bearer " prefix
+}
